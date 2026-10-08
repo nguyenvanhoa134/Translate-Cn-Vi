@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dịch truyện Trung – Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Noto+Serif:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e9eef1; --panel:#f8fafb; --ink:#1b2a38; --muted:#5d6d7b; --line:#cfd8de;
+  --accent:#1f6f5f; --accent-ink:#ffffff; --warn:#a4372a; --src-bg:#dfe7ec; --tr-bg:#fbfcfc;
+  --ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --read:"Noto Serif",Georgia,"Times New Roman",serif;
+  --cjk:"Noto Serif SC","Songti SC","SimSun","Source Han Serif SC",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#121a21;--panel:#18222b;--ink:#e3eaef;--muted:#92a3b1;--line:#2b3946;--accent:#4fb59f;--accent-ink:#0c1a17;--warn:#ff8f7d;--src-bg:#1d2933;--tr-bg:#16202a}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.5}
+body{padding:20px}
+.app{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:1fr}}
+h1{font-family:var(--read);font-weight:600;font-size:26px;margin:0 0 4px;letter-spacing:-.2px}
+.sub{color:var(--muted);margin:0 0 18px;font-size:13px}
+aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;position:sticky;top:20px}
+@media (max-width:900px){aside{position:static}}
+label{display:block;font-weight:500;font-size:13px;margin:14px 0 5px}
+label:first-of-type{margin-top:0}
+input[type=text],input[type=password],input[type=number],textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--tr-bg);color:var(--ink);font:inherit}
+textarea{resize:vertical;min-height:84px;font-size:13px}
+input:focus-visible,textarea:focus-visible,button:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hint{color:var(--muted);font-size:12px;margin:4px 0 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drop{display:block;border:1.5px dashed var(--line);border-radius:8px;padding:16px 12px;text-align:center;cursor:pointer;background:var(--tr-bg);color:var(--muted);font-size:13px}
+.drop.over{border-color:var(--accent);color:var(--ink)}
+.drop strong{color:var(--ink);display:block;font-size:14px;margin-bottom:2px;word-break:break-all}
+.btns{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+button{font:inherit;font-weight:500;padding:9px 14px;border-radius:6px;border:1px solid var(--line);background:var(--tr-bg);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.status{margin-top:14px;font-size:13px;color:var(--muted);min-height:20px}
+.status.err{color:var(--warn)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+main{min-width:0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:0;font-size:12px;color:var(--muted);padding:0 4px 6px;font-weight:500}
+.empty{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:48px 24px;text-align:center;color:var(--muted)}
+.chunk{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:10px}
+@media (max-width:700px){.chunk{grid-template-columns:1fr}.cols{display:none}}
+.src,.tr{padding:14px 16px;white-space:pre-wrap;word-break:break-word}
+.src{background:var(--src-bg);font-family:var(--cjk);font-size:15px;line-height:1.85}
+.tr{background:var(--tr-bg);font-family:var(--read);font-size:16px;line-height:1.75}
+.tr.wait{color:var(--muted);font-family:var(--ui);font-size:13px}
+.tr.cur{box-shadow:inset 3px 0 0 var(--accent)}
+.tr.fail{color:var(--warn);font-family:var(--ui);font-size:13px}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>Dịch truyện Trung – Việt</h1>
+    <p class="sub">Chạy ngay trên máy bạn, dịch bằng Gemini API.</p>
+
+    <label for="key">API key Gemini</label>
+    <input id="key" type="password" autocomplete="off" placeholder="Dán API key vào đây">
+    <p class="hint">Lấy miễn phí tại aistudio.google.com/apikey. Key chỉ lưu trong trình duyệt của bạn.</p>
+
+    <label for="model">Model</label>
+    <input id="model" type="text" list="models" value="gemini-2.5-flash">
+    <datalist id="models">
+      <option value="gemini-2.5-flash">
+      <option value="gemini-2.5-flash-lite">
+      <option value="gemini-flash-latest">
+      <option value="gemini-2.5-pro">
+    </datalist>
+
+    <div class="row2">
+      <div>
+        <label for="size">Ký tự mỗi đoạn</label>
+        <input id="size" type="number" min="500" max="6000" step="100" value="2000">
+      </div>
+      <div>
+        <label for="gap">Nghỉ giữa đoạn (giây)</label>
+        <input id="gap" type="number" min="0" max="60" step="1" value="5">
+      </div>
+    </div>
+    <p class="hint">Gói free giới hạn số lượt gọi mỗi phút. Nếu hay bị lỗi 429, tăng thời gian nghỉ.</p>
+
+    <label for="gloss">Tên riêng / thuật ngữ (tùy chọn)</label>
+    <textarea id="gloss" placeholder="Mỗi dòng một mục, ví dụ:&#10;林默 = Lâm Mặc&#10;青云宗 = Thanh Vân Tông"></textarea>
+
+    <label>File truyện (.txt)</label>
+    <label class="drop" id="drop" tabindex="0">
+      <input id="file" type="file" accept=".txt,text/plain" hidden>
+      <span id="dropText">Chọn file hoặc kéo thả vào đây</span>
+    </label>
+
+    <div class="btns">
+      <button class="primary" id="start" disabled>Bắt đầu dịch</button>
+      <button id="stop" disabled>Tạm dừng</button>
+      <button id="dl" disabled>Tải bản dịch (.txt)</button>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+  </aside>
+
+  <main>
+    <div class="cols" id="cols" hidden><div>Bản gốc</div><div>Bản dịch</div></div>
+    <div id="list">
+      <div class="empty">Chọn file .txt tiếng Trung để bắt đầu. Tiến độ được lưu lại, tắt trang rồi mở lại và chọn đúng file đó là dịch tiếp được.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const SYSTEM = [
+  "Bạn là dịch giả truyện tiếng Trung sang tiếng Việt chuyên nghiệp.",
+  "Dịch mượt mà, tự nhiên như một bộ truyện dịch đã xuất bản: câu văn thuần Việt, đúng ngữ cảnh, giữ giọng điệu và cảm xúc của nguyên tác, không dịch word-by-word.",
+  "Giữ nguyên cấu trúc đoạn và lời thoại: mỗi đoạn/dòng của bản gốc ứng với một đoạn/dòng trong bản dịch, giữ nguyên các dòng trống.",
+  "Tên người, tên địa danh, môn phái, chiêu thức, danh xưng cổ trang thì phiên âm Hán Việt (ví dụ 林默 = Lâm Mặc). Nếu có bảng thuật ngữ thì bắt buộc dùng theo bảng.",
+  "Chỉ trả về bản dịch, không thêm lời dẫn, ghi chú, giải thích hay lời xin lỗi. Không bỏ sót hay lược bớt nội dung."
+].join("\n");
+
+let chunks = [], results = [], errors = [], fileKey = "", running = false, stopFlag = false, current = -1;
+
+// ---------- lưu cấu hình ----------
+function lsGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+$("key").value = lsGet("dt_key") || "";
+$("model").value = lsGet("dt_model") || "gemini-2.5-flash";
+$("gloss").value = lsGet("dt_gloss") || "";
+$("size").value = lsGet("dt_size") || 2000;
+$("gap").value = lsGet("dt_gap") || 5;
+["key","model","gloss","size","gap"].forEach(id => $(id).addEventListener("change", () => lsSet("dt_"+id, $(id).value)));
+
+// ---------- đọc file ----------
+function decode(buf){
+  try { return new TextDecoder("utf-8",{fatal:true}).decode(buf) }
+  catch(e){ return new TextDecoder("gb18030").decode(buf) }
+}
+function splitChunks(text, max){
+  text = text.replace(/\r\n?/g,"\n").replace(/^\uFEFF/,"");
+  const lines = [];
+  for (const raw of text.split("\n")){
+    let line = raw;
+    while (line.length > max){
+      let cut = line.lastIndexOf("。", max);
+      if (cut < max*0.4) cut = line.lastIndexOf("，", max);
+      if (cut < max*0.4) cut = max - 1;
+      lines.push(line.slice(0, cut+1));
+      line = line.slice(cut+1);
+    }
+    lines.push(line);
+  }
+  const out = []; let buf = "";
+  for (const l of lines){
+    if (buf && (buf.length + l.length + 1) > max){ out.push(buf.replace(/^\n+|\n+$/g,"")); buf = ""; }
+    buf += (buf ? "\n" : "") + l;
+  }
+  if (buf.trim()) out.push(buf.replace(/^\n+|\n+$/g,""));
+  return out.filter(c => c.trim());
+}
+async function loadFile(f){
+  if (!f) return;
+  const text = decode(await f.arrayBuffer());
+  const max = Math.max(500, parseInt($("size").value) || 2000);
+  chunks = splitChunks(text, max);
+  fileKey = "dt_prog_" + f.name + "_" + f.size + "_" + max;
+  let saved = null;
+  try { saved = JSON.parse(lsGet(fileKey) || "null") } catch(e){}
+  results = chunks.map((_, i) => saved && saved[i] ? saved[i] : null);
+  errors = chunks.map(() => null);
+  $("dropText").innerHTML = "<strong></strong>";
+  $("dropText").firstChild.textContent = f.name;
+  $("dropText").insertAdjacentText("beforeend", chunks.length + " đoạn · " + text.length.toLocaleString("vi-VN") + " ký tự");
+  render();
+  const done = results.filter(Boolean).length;
+  setStatus(done ? "Đã khôi phục " + done + "/" + chunks.length + " đoạn từ lần dịch trước." : "Sẵn sàng dịch " + chunks.length + " đoạn.");
+  $("start").disabled = false;
+  $("start").textContent = done ? "Dịch tiếp" : "Bắt đầu dịch";
+  $("dl").disabled = !done;
+  updateBar();
+}
+$("file").addEventListener("change", e => loadFile(e.target.files[0]));
+const drop = $("drop");
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); $("file").click(); } });
+["dragover","dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => loadFile(e.dataTransfer.files[0]));
+
+// ---------- hiển thị ----------
+function setStatus(msg, isErr){ const s = $("status"); s.textContent = msg; s.className = "status" + (isErr ? " err" : ""); }
+function updateBar(){
+  const done = results.filter(Boolean).length;
+  $("barFill").style.width = chunks.length ? (done / chunks.length * 100) + "%" : "0";
+}
+function paintTr(i){
+  const el = document.getElementById("tr" + i); if (!el) return;
+  el.className = "tr";
+  if (results[i]) el.textContent = results[i];
+  else if (errors[i]){ el.className = "tr fail"; el.textContent = "Lỗi: " + errors[i]; }
+  else { el.className = "tr wait"; el.textContent = i === current ? "Đang dịch…" : "Chưa dịch"; }
+  if (i === current) el.classList.add("cur");
+}
+function render(){
+  const list = $("list"); list.textContent = "";
+  $("cols").hidden = !chunks.length;
+  const frag = document.createDocumentFragment();
+  chunks.forEach((c, i) => {
+    const row = document.createElement("div"); row.className = "chunk";
+    const s = document.createElement("div"); s.className = "src"; s.textContent = c;
+    const t = document.createElement("div"); t.id = "tr" + i;
+    row.append(s, t); frag.appendChild(row);
+  });
+  list.appendChild(frag);
+  chunks.forEach((_, i) => paintTr(i));
+}
+
+// ---------- gọi Gemini ----------
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function waitInterruptible(sec, msg){
+  for (let s = sec; s > 0 && !stopFlag; s--){ setStatus(msg + " (" + s + "s)"); await sleep(1000); }
+}
+function buildPrompt(i){
+  const parts = [];
+  const gloss = $("gloss").value.trim();
+  if (gloss) parts.push("BẢNG THUẬT NGỮ (bắt buộc dùng):\n" + gloss);
+  const prev = i > 0 && results[i-1] ? results[i-1].slice(-400) : "";
+  if (prev) parts.push("NGỮ CẢNH (cuối đoạn trước đã dịch, chỉ để nối mạch văn, KHÔNG dịch lại):\n" + prev);
+  parts.push("DỊCH ĐOẠN SAU SANG TIẾNG VIỆT:\n" + chunks[i]);
+  return parts.join("\n\n---\n\n");
+}
+async function callGemini(i){
+  const key = $("key").value.trim(), model = $("model").value.trim() || "gemini-2.5-flash";
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent";
+  const cats = ["HARM_CATEGORY_HARASSMENT","HARM_CATEGORY_HATE_SPEECH","HARM_CATEGORY_SEXUALLY_EXPLICIT","HARM_CATEGORY_DANGEROUS_CONTENT"];
+  const body = {
+    systemInstruction: { parts: [{ text: SYSTEM }] },
+    contents: [{ role: "user", parts: [{ text: buildPrompt(i) }] }],
+    generationConfig: { temperature: 0.6 },
+    safetySettings: cats.map(c => ({ category: c, threshold: "BLOCK_NONE" }))
+  };
+  for (let attempt = 0; attempt < 6; attempt++){
+    if (stopFlag) throw new Error("Đã tạm dừng");
+    let res;
+    try {
+      res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": key }, body: JSON.stringify(body) });
+    } catch (e) {
+      await waitInterruptible(10, "Mất kết nối, thử lại");
+      continue;
+    }
+    if (res.status === 429 || res.status === 500 || res.status === 503){
+      await waitInterruptible(15 * (attempt + 1), "Gemini đang giới hạn/bận, chờ rồi thử lại (đoạn " + (i+1) + ")");
+      continue;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
+    const cand = data.candidates && data.candidates[0];
+    const text = cand && cand.content && cand.content.parts ? cand.content.parts.map(p => p.text || "").join("") : "";
+    if (!text.trim()){
+      const why = (cand && cand.finishReason) || (data.promptFeedback && data.promptFeedback.blockReason) || "rỗng";
+      throw new Error("Gemini không trả về nội dung (" + why + ")");
+    }
+    return text.trim();
+  }
+  throw new Error("Hết lượt thử, có thể đã chạm hạn mức free. Hãy thử lại sau.");
+}
+
+function saveProgress(){ lsSet(fileKey, JSON.stringify(results)); }
+
+async function run(){
+  if (running) return;
+  if (!$("key").value.trim()){ setStatus("Hãy dán API key Gemini trước.", true); $("key").focus(); return; }
+  lsSet("dt_key", $("key").value); lsSet("dt_model", $("model").value);
+  running = true; stopFlag = false;
+  $("start").disabled = true; $("stop").disabled = false; $("file").disabled = true;
+  const gap = Math.max(0, parseFloat($("gap").value) || 0) * 1000;
+  let failed = 0;
+  for (let i = 0; i < chunks.length && !stopFlag; i++){
+    if (results[i]) continue;
+    const prevCur = current; current = i; errors[i] = null; paintTr(i); if (prevCur >= 0) paintTr(prevCur);
+    document.getElementById("tr" + i).scrollIntoView({ block: "center", behavior: "smooth" });
+    setStatus("Đang dịch đoạn " + (i+1) + "/" + chunks.length + "…");
+    try {
+      results[i] = await callGemini(i);
+      saveProgress();
+    } catch (e) {
+      if (stopFlag) break;
+      errors[i] = e.message; failed++;
+      if (/API key|API_KEY|PERMISSION|403|400/i.test(e.message)){ current = -1; paintTr(i); setStatus("Lỗi: " + e.message, true); break; }
+    }
+    current = -1; paintTr(i); updateBar(); $("dl").disabled = !results.some(Boolean);
+    if (!stopFlag && gap && i < chunks.length - 1) await sleep(gap);
+  }
+  current = -1; chunks.forEach((_, i) => paintTr(i));
+  running = false;
+  $("start").disabled = false; $("stop").disabled = true; $("file").disabled = false;
+  const done = results.filter(Boolean).length;
+  $("start").textContent = done === chunks.length ? "Dịch lại từ đầu" : "Dịch tiếp";
+  if (done === chunks.length) setStatus("Xong! Đã dịch " + done + "/" + chunks.length + " đoạn. Bấm “Tải bản dịch” để lưu.");
+  else if (stopFlag) setStatus("Đã tạm dừng ở " + done + "/" + chunks.length + " đoạn. Bấm “Dịch tiếp” khi muốn chạy lại.");
+  else if (!/^Lỗi/.test($("status").textContent)) setStatus("Dừng với " + failed + " đoạn lỗi. Bấm “Dịch tiếp” để thử lại các đoạn đó.", true);
+  updateBar();
+}
+$("start").addEventListener("click", () => {
+  if (results.every(Boolean) && chunks.length){ results = chunks.map(() => null); saveProgress(); render(); updateBar(); }
+  run();
+});
+$("stop").addEventListener("click", () => { stopFlag = true; setStatus("Đang dừng sau đoạn hiện tại…"); });
+
+// ---------- tải về ----------
+$("dl").addEventListener("click", () => {
+  const body = results.map((r, i) => r || ("[Đoạn " + (i+1) + " chưa dịch]")).join("\n\n");
+  const blob = new Blob([body], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  const name = ($("dropText").querySelector("strong") || {}).textContent || "truyen";
+  a.download = name.replace(/\.txt$/i, "") + "_vi.txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+</script>
+</body>
+</html>
